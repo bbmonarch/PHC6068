@@ -1,0 +1,85 @@
+---
+title: "MLperformance"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ML_Performance}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+MLperformance is a package that allows the user to calculate the performance metrics of a machine learning classifier from a dataset of two binary variables: actual and predicted. It creates a confusion matrix and calculates prevalence dependent and prevalence independent metrics. The dataset called "barretts" is included for an example.
+
+cmcounts() is a function that calculates the inner cells of the confusion matrix.  Save as a cmcounts object.
+
+conmat() creates the confusion matrix from the cmcounts object or from a vector of frequencies of binary outcomes: 00,01,10,11. Save as a confusion matrix object.
+
+metrics() calculates the confusion matrix cells and margins and outputs in a dataframe. (P)-Total positive, (N)-Total negative, (PP)-Predicted positive, (PN)-Predicted negative, (TP)-True positive, (TN)-True negative, (FP)- False positive, (FN)-False negative, (n)-sample size
+
+pdm() calculates prevalence dependent metrics. Prevalence, (PPV)- positive predictive value, (NPV)- negative predictive value, (FDR)- false discovery rate, (FOR)- false omission rate, (MCC), Matthews correlation coefficient
+
+pim() calculates prevalence independent metrics. (ACC)-Accuracy, (TPR)- True Positive rate, "Sensitivity", (TNR)- True Negative Rate, "Specificity", (BA)- Balanced Accuracy, (BM)- Bookmaker informedness, (FPR)- False Positive Rate, (FNR)- False Negative Rate, (PLR)- Positive Likelihood Ratio, (NLR)- Negative Likelihood Ratio, (DOR)- Diagnostic Odds Ratio
+
+conf() calculates the 95% confidence interval of the diagnostic odds ratio.
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Function examples with barretts data
+
+```{r setup}
+library(MLperformance)
+```
+
+The dataset called "barretts" included with this R package, contains two binary variables: actual and predicted.  A machine learning classifier was trained on H&E pathology slides on patients diagnosed with Barrett's esophagus containing no dysplasia.  There was a 10-year follow-up of patients to identify development of any level of dysplasia (known as "progressors") versus patients who did not develop any dysplasia (known as "non-progressors"). The variable values denote non-progressors=0 and progressors=1.  The machine learning classifier used 90% of cases as training cases to predict progression in the remaining 10% used as test cases. This dataset will be used with the MLperformance R package to calculate confusion matrix metrics to assess the performance of the machine learning classifier.
+
+The dataset "barretts" is loaded into the global environment and the cmcounts() function is used to calculate the cells of the confusion matrix. The cmcounts results are saved as a counts object.
+
+```{r}
+library(MLperformance)
+counts <- cmcounts(barretts)
+```
+
+The conmat() function is used with the cmcounts object to create the confusion matrix, and saved as a confusion matrix object.
+
+```{r}
+cm <- conmat(counts)
+cm
+```
+
+
+Alternatively, a vector of binary outcomes can be used to create the confusion matrix: 
+
+```{r}
+cm <- conmat(c(43,20,5,31)) #frequencies of binary outcomes: 00,01,10,11
+```
+
+The confusion matrix object can now be used to calculate various metrics. Using the metrics() function, the confusion table metrics and margins are calculated and can be saved in a dataframe.
+
+```{r}
+metrics(cm)
+```
+
+
+The pim() function is used to calculate the prevalence independent metrics from the confusion matrix object. This can also be saved in a dataframe.
+
+```{r}
+pim(cm)
+```
+
+The pdm() function is used to calculate the prevalence dependent metrics from the confusion matrix object.  
+
+```{r}
+pdm(cm)
+```
+
+The 95% confidence interval of the diagnostic odds ratio can be calculated using the conf() function.
+
+```{r}
+conf(cm)
+```
